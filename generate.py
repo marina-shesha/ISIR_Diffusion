@@ -18,7 +18,7 @@ import PIL.Image
 import tensorflow as tf
 import io
 from torchvision.utils import make_grid, save_image
-import classifier_lib
+import classifier_lib_2 as classifier_lib
 
 #----------------------------------------------------------------------------
 # Proposed EDM-G++ sampler.
@@ -185,7 +185,8 @@ def main(boosting, time_min, time_max, dg_weight_1st_order, dg_weight_2nd_order,
                 PIL.Image.fromarray(image_np, 'RGB').save(image_path)
 
         elif save_type == "npz":
-            r = np.random.randint(1000000)
+            #r = np.random.randint(1000000)
+            r=i
             with tf.io.gfile.GFile(os.path.join(outdir, f"samples_{r}.npz"), "wb") as fout:
                 io_buffer = io.BytesIO()
                 if class_labels == None:

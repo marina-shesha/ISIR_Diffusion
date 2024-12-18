@@ -35,11 +35,11 @@ def diffrs_sampler(
 
         x_cur = x_next
 
-        bool_zero = lst_idx == 0
+        bool_zero = (lst_idx == 0) 
         if warmup:
             if bool_zero.sum() != 0:
                 log_ratio_prev[bool_zero] = classifier_lib.get_grad_log_ratio(discriminator, vpsde, x_cur[bool_zero], t_steps[lst_idx][bool_zero], net.img_resolution, time_min, time_max, labels, log_only=True).detach().cpu()
-
+                
                 for i in range(len(log_ratio_prev[bool_zero])):
                     lst_adaptive[0].append(log_ratio_prev[bool_zero][i].cpu())
         else:
@@ -49,7 +49,7 @@ def diffrs_sampler(
                     labels_ = labels[bool_zero] if labels is not None else None
                     log_ratio_prev_check = log_ratio_prev[bool_zero]
                     log_ratio = classifier_lib.get_grad_log_ratio(discriminator, vpsde, x_check, t_steps[lst_idx][bool_zero], net.img_resolution, time_min, time_max, labels_, log_only=True).detach().cpu()
-                    bool_neg_log_ratio = log_ratio < adaptive[lst_idx][bool_zero] + torch.log(torch.rand_like(log_ratio) + 1e-7)
+                    bool_neg_log_ratio = log_ratio < adaptive[lst_idx][bool_zero] + torch.log(torch.rand_like(log_ratio) + 1e-7) 
                     bool_reject = torch.arange(len(bool_zero), device=bool_zero.device)[bool_zero][bool_neg_log_ratio]
                     bool_accept = torch.arange(len(bool_zero), device=bool_zero.device)[bool_zero][~bool_neg_log_ratio]
 
@@ -87,7 +87,7 @@ def diffrs_sampler(
         x_next = x_hat + (t_next - t_hat)[:, None, None, None] * d_cur
 
         # Apply 2nd order correction.
-        bool_2nd = lst_idx < num_steps - 1
+        bool_2nd = (lst_idx < num_steps - 1)
         if bool_2nd.sum() != 0:
             labels_ = labels[bool_2nd] if labels is not None else None
             denoised = net(x_next[bool_2nd], t_next[bool_2nd], labels_).to(torch.float64)
@@ -120,9 +120,9 @@ def diffrs_sampler(
                 log_ratio_prev_check = log_ratio_prev[bool_check]
                 log_ratio = classifier_lib.get_grad_log_ratio(discriminator, vpsde, x_check, t_steps[lst_idx][bool_check], net.img_resolution, time_min, time_max, labels_, log_only=True).detach().cpu()
                 if count == 0:
-                    bool_neg_log_ratio = log_ratio < adaptive2[lst_idx][bool_check] + torch.log(torch.rand_like(log_ratio) + 1e-7) + log_ratio_prev_check
+                    bool_neg_log_ratio = log_ratio < adaptive2[lst_idx][bool_check] + torch.log(torch.rand_like(log_ratio) + 1e-7) + log_ratio_prev_check #.detach().cpu()
                 else:
-                    bool_neg_log_ratio = log_ratio < adaptive[lst_idx][bool_check] + torch.log(torch.rand_like(log_ratio) + 1e-7)
+                    bool_neg_log_ratio = log_ratio < adaptive[lst_idx][bool_check] + torch.log(torch.rand_like(log_ratio) + 1e-7) #add .detach().cpu()
                 bool_reject = torch.arange(len(bool_check), device=bool_check.device)[bool_check][bool_neg_log_ratio]
                 bool_accept = torch.arange(len(bool_check), device=bool_check.device)[bool_check][~bool_neg_log_ratio]
 
@@ -205,8 +205,8 @@ def diffrs_sampler(
         lst_adaptive = [[] for i in range(len(t_steps))]
         lst_adaptive2 = [[] for i in range(len(t_steps))]
         x_next = latents.to(torch.float64) * t_steps[0]
-        lst_idx = torch.zeros((latents.shape[0],), device=latents.device).long()
-        log_ratio_prev = torch.zeros((latents.shape[0],))
+        lst_idx = torch.zeros((latents.shape[0],),).long()
+        log_ratio_prev = torch.zeros((latents.shape[0],),)
         per_sample_nfe = torch.zeros((latents.shape[0],)).long()
         num_warm = 0
         while num_warm < iter_warmup:
@@ -248,7 +248,7 @@ def diffrs_sampler(
 
     # Main sampling loop.
     x_next = latents.to(torch.float64) * t_steps[0]
-    lst_idx = torch.zeros((latents.shape[0],), device=latents.device).long()
+    lst_idx = torch.zeros((latents.shape[0],),).long()
     log_ratio_prev = torch.zeros((latents.shape[0],))
     per_sample_nfe = torch.zeros((latents.shape[0],)).long()
 
@@ -266,7 +266,7 @@ def diffrs_sampler(
             if (batch_size - total_samples % batch_size) <= bool_fin.sum():
                 x_fin[total_samples % batch_size:] = x_next[bool_fin][:batch_size - total_samples % batch_size]
                 r = np.random.randint(1000000)
-                save_img(x_fin, index=r)
+                save_img(x_fin, index=index)
                 index += 1
                 x_fin = torch.zeros_like(x_next)
 
