@@ -8,7 +8,7 @@ import PIL.Image
 import tensorflow as tf
 import io
 from torchvision.utils import make_grid, save_image
-import classifier_lib_2 as classifier_lib
+import classifier_lib
 import random
 import time
 
