@@ -190,7 +190,7 @@ def isir_sampler(img_batch, device, save_type, time_min, time_max, vpsde, discri
         x_next_inner = proposal_x_nexts[x_next_inner_ind, np.arange(batch_size)] 
     
       x_0 = x_next_inner
-      for t in tqdm(range(num_steps - 1)):
+      for t in tqdm(range(num_steps)):
         x_0, lst_idx = sampling_loop(x_0, lst_idx, labels)
       for cnt_save_img in range(batch_size//img_batch):
         l = cnt_save_img * img_batch
