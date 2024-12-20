@@ -158,6 +158,18 @@ def isir_sampler(img_batch, device, save_type, time_min, time_max, vpsde, discri
     t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])]) # t_N = 0
     current_time = time.time()
     index = 0
+
+    Ms = np.array([0.0000, 0.0084, 0.0085, 0.0240, 0.0452, 0.0547, 0.0341, 0.0691, 0.1092,
+        0.2525, 0.2343, 0.6163, 1.4788, 2.0156, 2.0038, 0.9038, 0.3066, 0.1336,
+        0.0223])
+    Ns = (np.ceil(2*Ms + 1)).astype(int)
+    Ros = (2* Ms)/ (2*Ms + Ns - 1)
+    Ks = np.ceil((-3*np.log(10))/np.log(Ros)).astype(int)
+
+    Ks = np.where(Ns==1, 1, Ks)
+
+    print(Ns, Ks, (Ns*Ks).sum())
+
     for _ in range(num_samples//batch_size):
       # Main sampling loop.
       lst_idx = torch.zeros((batch_size,),).long()
