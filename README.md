@@ -12,6 +12,7 @@
 - **`generate_diffrs.py`**: Script to run DiffRS sampling (based on the DiffRS paper).
 - **`classifier_lib.py`**: Contains utility functions, including the time-dependent discriminator for density ratio estimation.
 - **`fid_npzs.py`**: Script to compute FID scores for generated samples.
+- **`exp.ipynb`**: Notebook with code for running all the methods.
 
 ---
 
